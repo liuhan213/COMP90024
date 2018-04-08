@@ -7,19 +7,24 @@ from mpi4py import MPI
 
 start_time =  time.time()
 
-#comn = MPI.COMM_WORLD
-#size = comm.Get_size()
-#rank = comn.Get_rank()
+comm = MPI.COMM_WORLD
+size = comm.Get_size()
+rank = comm.Get_rank()
 
 
 # post count of each gird, row, and column
 coords_list = []
 melbGrid_list = []
 row_list = [{'id':"A_Row",'count':0},{'id':"B_Row",'count':0},{'id':"C_Row",'count':0},{'id':"D_Row",'count':0}]
-
 column_list = [{'id':"column_1",'count':0},{'id':"column_2",'count':0},{'id':"column_3",'count':0},{'id':"column_4",'count':0},{'id':"column_5",'count':0}]
 
-# function  get_grids_list
+
+#def split(list, count):
+#    return [list[i::count] for i in range(count)]
+
+
+# get grids' coordinate information into the list melbGrid_list
+
 def get_grids_list(grid_file_address):
     with open(grid_file_address) as f:
         files_grid = json.load(f)
@@ -34,39 +39,55 @@ def get_grids_list(grid_file_address):
             melbGrid_list.append(grid_one)
     return melbGrid_list
 
-#  get_coords_list
-def get_coords_list(ins_json_address):
-#    files_ins = json.load(open(ins_json_address))
-    with open(ins_json_address) as f:
 
-        for line in f:
-            try:
-                coord_one = {}
-                line_new = json.loads(line[0:len(line)-2])
-                coord_one['x'] = line_new['doc']['coordinates']['coordinates'][1]
-                coord_one['y'] = line_new['doc']['coordinates']['coordinates'][0]
-                coords_list.append(coord_one)
-            except:
-                continue
-    return coords_list
+#  get_coords_list into the list coords_list
+def get_coords_list(ins_json_address):
+    if rank == 0:
+        with open(ins_json_address) as f:
+            coords = []
+            for line in f:
+                try:
+                    coord_one = {}
+                    line_new = json.loads(line[0:len(line)-2])
+                    coord_one['x'] = line_new['doc']['coordinates']['coordinates'][1]
+                    coord_one['y'] = line_new['doc']['coordinates']['coordinates'][0]
+                    coords.append(coord_one)
+                except:
+                    continue
+#            chunks = [coords_list_output[i::size] for i in range(size)]
+
+    else:
+        coords = None
+#    return chunks
+    return(coords)
+
+
+
+def getchunks(co_list,count):
+    if rank == 0:
+        chunks = [co_list[i::size] for i in range(count)]
+    return chunks
 
 
 # funciton of count_coords_grids
-def count_coords_grids(grid_list,coord_list):
-    for coord in coord_list:
-        coord_x = coord['x']
-        coord_y = coord['y']
+def count_coords_grids(grid_list, coord_one):
+#    for coord in coordinator_list:
+
+        coord_x = coord_one['x']
+        coord_y = coord_one['y']
         for grid in grid_list:
             if (grid['xmin'] <= coord_x < grid['xmax'] and grid['ymin'] <= coord_y <  grid['ymax']):
                 grid['count'] += 1
+#        return grid_list
+#    print str(rank) + ':' + grid_list+ '\n'
+#    result = comm.gather(grid_list)
 
-    return grid_list
 
 
 
 # function count_rows
-def count_rows():
-    for grid in melbGrid_list:
+def count_rows(grid_list,row_list):
+    for grid in grid_list:
         if grid['id'].startswith('A'):
 #        if re.match('A\d',grid['id']):
             row_list[0]['count'] += grid['count']
@@ -83,9 +104,9 @@ def count_rows():
 
 
 # function count_columns
-def count_columns():
-
-    for grid in melbGrid_list:
+def count_columns(grid_list,column_list):
+# melbGrid_list
+    for grid in grid_list:
         if grid['id'].endswith('1'):
 #        if re.match('\w1',grid['id']):
             column_list[0]['count'] += grid['count']
@@ -137,17 +158,63 @@ def rank_column():
 
 
 # call function
-get_grids_list('melbGrid.json')
-get_coords_list('tinyInstagram1.json')
-count_coords_grids(melbGrid_list,coords_list)
-count_rows()
-count_columns()
-rank_grid()
-rank_row()
-rank_column()
 
 
 
-total_minutes = time.time() - start_time
-minutes, seconds = divmod(total_minutes, 60)
-print' Total time used for execution is {} minutes and {} seconds'.format(minutes, seconds)
+if rank==0:
+    get_grids_list('melbGrid.json')
+
+    coords_list = get_coords_list('tinyInstagram1.json')
+#    print('get coords---------')
+#    print(coords_list)
+    chunks = getchunks(coords_list,size)
+else:
+    chunks = None
+
+chunk = comm.scatter(chunks,root=0)
+#print('after scatter: chunk --------')
+#print(chunk)
+#print(len(chunk))
+
+    #    for data in chunk:
+    #        count_coords_grids(melbGrid_list,data)
+
+
+result = []
+#print('this is from rank',rank)
+
+for chunk_one in chunk:
+#    print(rank, chunk_one)
+
+#    print('this is rank',rank)
+#    print('chunk_one ------')
+#    print(chunk_one)
+    count_coords_grids(melbGrid_list,chunk_one)
+
+#result.append(melbGrid_list)
+#    print('result count----')
+#    print(len(result))
+
+#print('result------')
+#print(result)
+
+results = comm.gather(melbGrid_list,root = 0)
+#print('after gather: chunks --------')
+#print(results)
+
+
+if rank==0:
+
+    print('results- new---- -----')
+    print(results)
+    count_rows(melbGrid_list,row_list)
+    count_columns(melbGrid_list,column_list)
+
+    rank_grid()
+    rank_row()
+    rank_column()
+
+
+#total_minutes = time.time() - start_time
+#minutes, seconds = divmod(total_minutes, 60)
+#print' Total time used for execution is {} minutes and {} seconds'.format(minutes, seconds)
