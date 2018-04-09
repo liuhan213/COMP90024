@@ -63,9 +63,8 @@ def get_coords_list(ins_json_address):
 
 
 
-def getchunks(co_list,count):
-    if rank == 0:
-        chunks = [co_list[i::size] for i in range(count)]
+def getchunks(big_chunk,count):
+    chunks = [big_chunk[i::size] for i in range(count)]
     return chunks
 
 
@@ -159,54 +158,68 @@ def rank_column():
 
 # call function
 
-
-
-if rank==0:
-    get_grids_list('melbGrid.json')
-
-    coords_list = get_coords_list('tinyInstagram1.json')
-#    print('get coords---------')
-#    print(coords_list)
-    chunks = getchunks(coords_list,size)
-else:
-    chunks = None
-
-chunk = comm.scatter(chunks,root=0)
 #print('after scatter: chunk --------')
 #print(chunk)
 #print(len(chunk))
 
     #    for data in chunk:
     #        count_coords_grids(melbGrid_list,data)
-
-
-result = []
-#print('this is from rank',rank)
-
-for chunk_one in chunk:
-#    print(rank, chunk_one)
-
-#    print('this is rank',rank)
-#    print('chunk_one ------')
-#    print(chunk_one)
-    count_coords_grids(melbGrid_list,chunk_one)
+#    print('get coords---------')
+#    print(coords_list)
 
 #result.append(melbGrid_list)
 #    print('result count----')
 #    print(len(result))
 
 #print('result------')
-#print(result)
 
-results = comm.gather(melbGrid_list,root = 0)
+#print(result)
+#    print(rank, chunk_one)
+
+#    print('this is rank',rank)
+#    print('chunk_one ------')
+#    print(chunk_one)
+
 #print('after gather: chunks --------')
 #print(results)
+#print('this is from rank',rank)
 
+# get big chunk
+if rank==0:
+    get_grids_list('melbGrid.json')
+
+    coords_list = get_coords_list('tinyInstagram1.json')
+
+    chunks = getchunks(coords_list,size)
+else:
+    chunks = None
+
+# scatter chunk
+chunk = comm.scatter(chunks,root=0)
+print 'rank',rank,':after_scatter_has data:',chunk
+
+# compute
+
+#for chunk_one in chunk:
+#    count_coords_grids(melbGrid_list,chunk_one)
+#print('this is from rank',rank,':',melbGrid_list)
+# gather chunk
+
+#results = comm.gather(melbGrid_list,root = 0)
+gather_chunk = comm.gather(chunk,root=0)
 
 if rank==0:
+    result = []
+    print('type of newdata:',type(gather_chunk))
+    print('len of newdata:',len(gather_chunk))
+    for i in gather_chunk:
+        for j in i:
+            result.append(j)
+    print 'master:',gather_chunk
+    print 'result:',result
 
-    print('results- new---- -----')
-    print(results)
+
+
     count_rows(melbGrid_list,row_list)
     count_columns(melbGrid_list,column_list)
 

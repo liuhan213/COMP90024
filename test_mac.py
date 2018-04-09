@@ -24,6 +24,7 @@ else:
     chunks = None
 
 chunk = comm.scatter(chunks, root=0)
+
 result = comm.gather(chunk)
 
 print result
