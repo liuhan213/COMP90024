@@ -184,7 +184,7 @@ if rank== 0:
             for coord in chunk:
                if coord['id'] == grid['id']:
                    grid['count'] = grid['count']+coord['count']
-    print(melbGrid_list)
+#    print(melbGrid_list)
 
     count_rows(melbGrid_list,row_list)
     count_columns(melbGrid_list,column_list)
