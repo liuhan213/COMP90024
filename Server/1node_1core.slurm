@@ -1,12 +1,11 @@
 #!/bin/bash
-#SBATCH -p physical
-#SBATCH --nodes=1
-#SBATCH --ntasks=1
+#SBATCH --partition physical
 #SBATCH --time=00:50:00
-#SBATCH --job-name=bigInstagram_1node_1cores
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --job-name=1node_1core
 
-echo 'Run job with 1 node and 1 core'
-echo ' '
+echo 'Run with 1 node and 1 core'
 
-module load Python/3.5.2-goolf-2015a
-mpiexec python count2.py
+module load Python/2.7.9-goolf-2015a
+time mpiexec python rank.py

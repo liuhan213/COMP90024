@@ -1,0 +1,28 @@
+Output for 1 node and 1 core
+Time taken by 1 core is: 220 seconds
+**********************************************
+Top Ten Tweeters mentioned the most  on Twitter from given data:
+5sos 674019
+calum5sos 401742
+luke5sos 14783
+itunesfestival 13669
+bbcr1 13179
+johnfeldy 8994
+michael5sos 8956
+ashton5sos 8639
+smh 6721
+gma 6229
+**********************************************
+Top Ten Topics in trending on Twitter from given data:
+vote5sos 33760
+5sosgoodgirls 24639
+auspol 11701
+amnesiamusicvideo 9718
+5sosninjas 9188
+… 7407
+photography 5976
+vmas 5525
+sydney 4814
+socialmedia 3961
+**********************************************
+The number of times term football exists in Twitter data is: 2315

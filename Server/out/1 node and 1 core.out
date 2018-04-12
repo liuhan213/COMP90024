@@ -1,5 +1,5 @@
-Run with one node and 8 cores
-('start_time:', 1523531796.931574)
+Run with 1 node and 1 core
+('start_time:', 1523534166.977779)
 posts per grid: ------------------------------ 
 'C2: 175969 posts'
 'B2: 22797 posts'
@@ -28,10 +28,10 @@ posts per column: ------------------------------
 'column_4: 7359 posts'
 'column_1: 5168 posts'
 'column_5: 3421 posts'
-('endtime:', 1523531945.468461)
+('endtime:', 1523534319.2595)
 
-Total time used for execution is 02 minutes and 28 seconds
+Total time used for execution is 02 minutes and 32 seconds
 
-real	2m29.393s
-user	19m46.477s
-sys	0m4.187s
+real	2m32.897s
+user	2m30.195s
+sys	0m2.531s
