@@ -1,0 +1,37 @@
+Run with 1 node and 1 core
+('start_time:', 1523534166.977779)
+posts per grid: ------------------------------ 
+'C2: 175969 posts'
+'B2: 22797 posts'
+'C3: 18293 posts'
+'B3: 6420 posts'
+'C4: 4234 posts'
+'B1: 3311 posts'
+'C5: 2638 posts'
+'D3: 2467 posts'
+'D4: 1923 posts'
+'C1: 1595 posts'
+'B4: 1069 posts'
+'D5: 783 posts'
+'A3: 497 posts'
+'A2: 479 posts'
+'A1: 262 posts'
+'A4: 133 posts'
+posts per row: ------------------------------ 
+'C_Row: 202729 posts'
+'B_Row: 33597 posts'
+'D_Row: 5173 posts'
+'A_Row: 1371 posts'
+posts per column: ------------------------------ 
+'column_2: 199245 posts'
+'column_3: 27677 posts'
+'column_4: 7359 posts'
+'column_1: 5168 posts'
+'column_5: 3421 posts'
+('endtime:', 1523534319.2595)
+
+Total time used for execution is 02 minutes and 32 seconds
+
+real	2m32.897s
+user	2m30.195s
+sys	0m2.531s
